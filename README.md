@@ -1,7 +1,10 @@
 # Unity Source Movement
 Based on Fragsurf by cr4yz (Jake E.), available here: https://github.com/AwesomeX/Fragsurf-Character-Controller/
+
 Video demo: https://www.youtube.com/watch?v=w5BquYbCBAE
+
 WebGL demo: http://www.typicalgames.com/ModifiedFragsurf/index.html
+
 
 A full adaptation of Source engine's movement mechanics in Unity, including strafe jumping, surfing, bunnyhopping, swimming, crouching and jump-crouching (optional), as well as sliding (optional). The player can also push around (and be pushed around by) rigidbodies.
 
