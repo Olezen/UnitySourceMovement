@@ -3,7 +3,9 @@ Based on Fragsurf by cr4yz (Jake E.), available here: https://github.com/Awesome
 
 Video demo: https://www.youtube.com/watch?v=w5BquYbCBAE
 
-WebGL demo: http://www.typicalgames.com/ModifiedFragsurf/index.html
+WebGL demo: http://www.typicalgames.com/FragsurfDemo/index.html
+
+Direct Unity package download: http://www.typicalgames.com/ModifiedFragsurf.unitypackage
 
 
 A full adaptation of Source engine's movement mechanics in Unity, including strafe jumping, surfing, bunnyhopping, swimming, crouching and jump-crouching (optional), as well as sliding (optional). The player can also push around (and be pushed around by) rigidbodies.
