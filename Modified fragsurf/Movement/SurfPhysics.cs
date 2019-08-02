@@ -29,7 +29,12 @@ namespace Fragsurf.Movement {
         /// <param name="origin"></param>
         /// <param name="velocity"></param>
         /// http://www.00jknight.com/blog/unity-character-controller
+
         public static void ResolveCollisions (Collider collider, ref Vector3 origin, ref Vector3 velocity, float rigidbodyPushForce) {
+            ResolveCollisions (collider, ref origin, ref velocity, rigidbodyPushForce, 1f);
+        }
+
+        public static void ResolveCollisions (Collider collider, ref Vector3 origin, ref Vector3 velocity, float rigidbodyPushForce, float velocityMultiplier) {
 
             // manual collision resolving
             int numOverlaps = 0;
@@ -59,17 +64,18 @@ namespace Fragsurf.Movement {
                     Quaternion.identity, _colliders [i], _colliders [i].transform.position,
                     _colliders [i].transform.rotation, out direction, out distance)) {
                     
+                    // Handle collision
                     direction.Normalize ();
                     Vector3 penetrationVector = direction * distance;
                     Vector3 velocityProjected = Vector3.Project (velocity, -direction);
                     velocityProjected.y = 0; // don't touch y velocity, we need it to calculate fall damage elsewhere
                     origin += penetrationVector;
-                    velocity -= velocityProjected;
+                    velocity -= velocityProjected * velocityMultiplier;
                     
                     Rigidbody rb = _colliders [i].GetComponentInParent<Rigidbody> ();
                     if (rb)
                         if (!rb.isKinematic)
-                            rb.AddForceAtPosition (velocityProjected * rigidbodyPushForce, origin, ForceMode.Impulse);
+                            rb.AddForceAtPosition (velocityProjected * velocityMultiplier * rigidbodyPushForce, origin, ForceMode.Impulse);
                     
                 }
 
