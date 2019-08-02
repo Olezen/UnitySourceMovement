@@ -76,8 +76,7 @@ namespace Fragsurf.Movement {
 
             float maxDistPerFrame = 0.05f;
             Vector3 velocityThisFrame = _surfer.moveData.velocity * _deltaTime;
-            float velocityDist = velocityThisFrame.magnitude;
-            float velocityDistLeft = velocityDist;
+            float velocityDistLeft = velocityThisFrame.magnitude;
             float initialVel = velocityDistLeft;
             while (velocityDistLeft > 0f) {
 
@@ -89,7 +88,7 @@ namespace Fragsurf.Movement {
                 _surfer.moveData.origin += velThisLoop;
 
                 // don't penetrate walls
-                SurfPhysics.ResolveCollisions (_surfer.collider, ref _surfer.moveData.origin, ref _surfer.moveData.velocity, _surfer.moveData.rigidbodyPushForce, amountThisLoop / velocityDist);
+                SurfPhysics.ResolveCollisions (_surfer.collider, ref _surfer.moveData.origin, ref _surfer.moveData.velocity, _surfer.moveData.rigidbodyPushForce, amountThisLoop / initialVel);
 
             }
 
