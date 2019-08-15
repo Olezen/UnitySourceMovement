@@ -11,12 +11,12 @@ namespace Fragsurf.TraceUtil {
         /// <param name="end"></param>
         /// <param name="layerMask"></param>
         /// <returns></returns>
-        public static Trace TraceCollider (Collider collider, Vector3 origin, Vector3 end, int layerMask) {
+        public static Trace TraceCollider (Collider collider, Vector3 origin, Vector3 end, int layerMask, float colliderScale = 1f) {
 
             if (collider is BoxCollider) {
 
                 // Box collider trace
-                return TraceBox (origin, end, collider.bounds.extents, collider.contactOffset, layerMask);
+                return TraceBox (origin, end, collider.bounds.extents, collider.contactOffset, layerMask, colliderScale);
 
             } else if (collider is CapsuleCollider) {
 
@@ -26,7 +26,7 @@ namespace Fragsurf.TraceUtil {
                 Vector3 point1, point2;
                 Movement.SurfPhysics.GetCapsulePoints (capc, origin, out point1, out point2);
 
-                return TraceCapsule (point1, point2, capc.radius, origin, end, capc.contactOffset, layerMask);
+                return TraceCapsule (point1, point2, capc.radius, origin, end, capc.contactOffset, layerMask, colliderScale);
 
             }
 
@@ -38,7 +38,7 @@ namespace Fragsurf.TraceUtil {
         /// 
         /// </summary>
         /// <returns></returns>
-        public static Trace TraceCapsule (Vector3 point1, Vector3 point2, float radius, Vector3 start, Vector3 destination, float contactOffset, int layerMask) {
+        public static Trace TraceCapsule (Vector3 point1, Vector3 point2, float radius, Vector3 start, Vector3 destination, float contactOffset, int layerMask, float colliderScale = 1f) {
 
             var result = new Trace () {
                 startPos = start,
@@ -52,9 +52,9 @@ namespace Fragsurf.TraceUtil {
 
             RaycastHit hit;
             if (Physics.CapsuleCast (
-                point1: point1,
-                point2: point2,
-                radius: radius,
+                point1: point1 - Vector3.up * colliderScale * 0.5f,
+                point2: point2 + Vector3.up * colliderScale * 0.5f,
+                radius: radius * colliderScale,
                 direction: direction,
                 hitInfo: out hit,
                 maxDistance: maxDistance,
@@ -65,6 +65,7 @@ namespace Fragsurf.TraceUtil {
                 result.hitCollider = hit.collider;
                 result.hitPoint = hit.point;
                 result.planeNormal = hit.normal;
+                result.distance = hit.distance;
 
             } else
                 result.fraction = 1;
@@ -77,7 +78,7 @@ namespace Fragsurf.TraceUtil {
         /// 
         /// </summary>
         /// <returns></returns>
-        public static Trace TraceBox (Vector3 start, Vector3 destination, Vector3 extents, float contactOffset, int layerMask) {
+        public static Trace TraceBox (Vector3 start, Vector3 destination, Vector3 extents, float contactOffset, int layerMask, float colliderScale = 1f) {
 
             var result = new Trace () {
                 startPos = start,
@@ -91,7 +92,7 @@ namespace Fragsurf.TraceUtil {
 
             RaycastHit hit;
             if (Physics.BoxCast (center: start,
-                halfExtents: extents,
+                halfExtents: extents * colliderScale,
                 direction: direction,
                 orientation: Quaternion.identity,
                 maxDistance: maxDistance,
@@ -103,6 +104,7 @@ namespace Fragsurf.TraceUtil {
                 result.hitCollider = hit.collider;
                 result.hitPoint = hit.point;
                 result.planeNormal = hit.normal;
+                result.distance = hit.distance;
 
             } else
                 result.fraction = 1;
