@@ -118,7 +118,7 @@ namespace Fragsurf.Movement {
             Vector3 upOrigin = origin + Vector3.up * upDistance;
 
             // Trace forwards (check for walls etc)
-            float forwardMagnitude = stepOffset;
+            float forwardMagnitude = forwardVelocity.magnitude * Time.deltaTime;
             float forwardDistance = forwardMagnitude;
             Trace forwardTrace = Tracer.TraceCollider (collider, upOrigin, upOrigin + forwardDirection * Mathf.Max (0.2f, forwardMagnitude), groundLayerMask);
             if (forwardTrace.hitCollider != null)
