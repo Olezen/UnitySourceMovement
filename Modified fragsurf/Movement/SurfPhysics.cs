@@ -149,7 +149,6 @@ namespace Fragsurf.Movement {
             // Actually move
             if (origin != endOrigin && forwardDistance > 0f) {
 
-                Debug.Log ("Moved up step!");
                 origin = endOrigin + forwardDirection * forwardDistance * Time.deltaTime;
                 return true;
 
