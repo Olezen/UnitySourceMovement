@@ -10,6 +10,7 @@ namespace Fragsurf.TraceUtil {
         public Collider hitCollider;
         public Vector3 hitPoint;
         public Vector3 planeNormal;
+        public float distance;
 
     }
 }

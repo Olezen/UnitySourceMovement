@@ -32,6 +32,8 @@ namespace Fragsurf.Movement {
         public bool crouching = false;
         public bool sprinting = false;
 
+        public float slopeLimit = 45f;
+
         public float rigidbodyPushForce = 1f;
 
         public float defaultHeight = 2f;
@@ -47,6 +49,9 @@ namespace Fragsurf.Movement {
         public bool grounded = false;
         public bool groundedTemp = false;
         public float fallingVelocity = 0f;
+
+        public bool useStepOffset = false;
+        public float stepOffset = 0f; 
 
     }
 }
