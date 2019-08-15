@@ -1,3 +1,5 @@
+Update 15 August 2019: Added experimental step offset functionality. (not in the UnityPackage download or any demos)
+
 # Unity Source Movement
 Based on Fragsurf by cr4yz (Jake E.), available here: https://github.com/AwesomeX/Fragsurf-Character-Controller/
 
