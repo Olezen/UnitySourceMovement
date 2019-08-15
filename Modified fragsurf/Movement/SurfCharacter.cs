@@ -38,7 +38,11 @@ namespace Fragsurf.Movement {
         [Header ("Features")]
         public bool crouchingEnabled = true;
         public bool slidingEnabled = false;
-        
+
+        [Header ("Step offset (can be buggy, enable at your own risk)")]
+        public bool useStepOffset = false;
+        public float stepOffset = 0.35f;
+
         [Header ("Movement Config")]
         [SerializeField]
         public MovementConfig movementConfig;
@@ -179,6 +183,8 @@ namespace Fragsurf.Movement {
 
             }
 
+            _moveData.slopeLimit = movementConfig.slopeLimit;
+
             _moveData.rigidbodyPushForce = rigidbodyPushForce;
 
             _moveData.slidingEnabled = slidingEnabled;
@@ -194,7 +200,10 @@ namespace Fragsurf.Movement {
             _collider.isTrigger = !solidCollider;
             _moveData.origin = transform.position;
             _startPosition = transform.position;
-            
+
+            _moveData.useStepOffset = useStepOffset;
+            _moveData.stepOffset = stepOffset;
+
         }
 
         private void Update () {
