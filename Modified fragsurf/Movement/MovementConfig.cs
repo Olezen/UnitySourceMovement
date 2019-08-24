@@ -16,9 +16,9 @@ namespace Fragsurf.Movement {
         [Range (30f, 75f)] public float slopeLimit = 45f;
 
         [Header ("Air movement")]
-        public bool clampAirSpeed = true;
-        public float airCap = 0.4f;
-        public float airAcceleration = 12f;
+        public bool clampAirSpeed = false;
+        public float airCap = 0.6f;
+        public float airAcceleration = 6f;
         public float airFriction = 0.4f;
 
         [Header ("Ground movement")]
