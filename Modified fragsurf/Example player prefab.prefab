@@ -124,20 +124,22 @@ MonoBehaviour:
   m_GameObject: {fileID: 5467285084242854813}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 601d4686cc0b70d45a98271d52094850, type: 3}
+  m_Script: {fileID: 11500000, guid: 442a452188e1eb6428ec1c8cabbb7757, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   colliderSize: {x: 1, y: 2, z: 1}
   collisionType: 1
   weight: 75
-  rigidbodyPushForce: 0.5
-  solidCollider: 1
+  rigidbodyPushForce: 2
+  solidCollider: 0
   viewTransform: {fileID: 5467285085316221433}
   playerRotationTransform: {fileID: 5467285084242854812}
   crouchingHeightMultiplier: 0.5
   crouchingSpeed: 10
   crouchingEnabled: 1
   slidingEnabled: 0
+  useStepOffset: 0
+  stepOffset: 0.35
   movementConfig:
     autoBhop: 1
     gravity: 20
@@ -146,9 +148,9 @@ MonoBehaviour:
     maxSpeed: 6
     maxVelocity: 50
     slopeLimit: 45
-    clampAirSpeed: 1
-    airCap: 0.4
-    airAcceleration: 12
+    clampAirSpeed: 0
+    airCap: 0.6
+    airAcceleration: 6
     airFriction: 0.4
     walkSpeed: 7
     sprintSpeed: 12
@@ -161,9 +163,9 @@ MonoBehaviour:
     minimumSlideSpeed: 9
     maximumSlideSpeed: 18
     slideSpeedMultiplier: 1.75
-    slideFriction: 15
-    downhillSlideSpeedMultiplier: 3
-    slideDelay: 1
+    slideFriction: 14
+    downhillSlideSpeedMultiplier: 2.5
+    slideDelay: 0.5
     swimUpSpeed: 12
     underwaterSwimSpeed: 3
     underwaterAcceleration: 6
@@ -212,7 +214,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 5467285085316221438}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 604093a680e6d5a488206647cc35be23, type: 3}
+  m_Script: {fileID: 11500000, guid: cfa8e268ce5798342a4e67757abe08e7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   bodyTransform: {fileID: 5467285084242854812}
