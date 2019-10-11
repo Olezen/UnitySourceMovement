@@ -124,11 +124,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 5467285084242854813}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 442a452188e1eb6428ec1c8cabbb7757, type: 3}
+  m_Script: {fileID: 11500000, guid: 601d4686cc0b70d45a98271d52094850, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   colliderSize: {x: 1, y: 2, z: 1}
-  collisionType: 1
+  collisionType: 0
   weight: 75
   rigidbodyPushForce: 2
   solidCollider: 0
@@ -214,7 +214,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 5467285085316221438}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: cfa8e268ce5798342a4e67757abe08e7, type: 3}
+  m_Script: {fileID: 11500000, guid: 604093a680e6d5a488206647cc35be23, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   bodyTransform: {fileID: 5467285084242854812}

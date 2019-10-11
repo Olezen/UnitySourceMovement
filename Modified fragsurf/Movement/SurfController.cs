@@ -73,7 +73,7 @@ namespace Fragsurf.Movement {
             _surfer.moveData.velocity = Vector3.ClampMagnitude (_surfer.moveData.velocity, _config.maxVelocity);
             speed =  _surfer.moveData.velocity.magnitude;
             _surfer.moveData.velocity.y = yVel;
-
+            
             float maxDistPerFrame = 0.05f;
             Vector3 velocityThisFrame = _surfer.moveData.velocity * _deltaTime;
             float velocityDist = velocityThisFrame.magnitude;
@@ -432,7 +432,7 @@ namespace Fragsurf.Movement {
 
                 if (movingUp && _surfer.moveType != MoveType.Noclip)
                     _surfer.moveData.surfaceFriction = _config.airFriction;
-
+                
                 return false;
 
             } else {
@@ -481,7 +481,7 @@ namespace Fragsurf.Movement {
         private Trace TraceToFloor () {
 
             var down = _surfer.moveData.origin;
-            down.y -= 0.1f;
+            down.y -= 0.15f;
 
             return Tracer.TraceCollider (_surfer.collider, _surfer.moveData.origin, down, SurfPhysics.groundLayerMask);
 

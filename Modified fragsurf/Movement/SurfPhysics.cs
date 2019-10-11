@@ -118,7 +118,7 @@ namespace Fragsurf.Movement {
             Vector3 upOrigin = origin + Vector3.up * upDistance;
 
             // Trace forwards (check for walls etc)
-            float forwardMagnitude = forwardVelocity.magnitude * Time.deltaTime;
+            float forwardMagnitude = stepOffset;
             float forwardDistance = forwardMagnitude;
             Trace forwardTrace = Tracer.TraceCollider (collider, upOrigin, upOrigin + forwardDirection * Mathf.Max (0.2f, forwardMagnitude), groundLayerMask);
             if (forwardTrace.hitCollider != null)
@@ -149,6 +149,7 @@ namespace Fragsurf.Movement {
             // Actually move
             if (origin != endOrigin && forwardDistance > 0f) {
 
+                Debug.Log ("Moved up step!");
                 origin = endOrigin + forwardDirection * forwardDistance * Time.deltaTime;
                 return true;
 
