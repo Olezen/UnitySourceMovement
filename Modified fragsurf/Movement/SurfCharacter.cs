@@ -90,6 +90,12 @@ namespace Fragsurf.Movement {
 
         ///// Methods /////
 
+		private void OnDrawGizmos()
+		{
+			Gizmos.color = Color.red;
+			Gizmos.DrawWireCube( transform.position, colliderSize );
+		}
+		
         private void Awake () {
             
             _controller.playerTransform = playerRotationTransform;
