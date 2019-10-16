@@ -38,8 +38,10 @@ namespace Fragsurf.Movement {
         [Header ("Features")]
         public bool crouchingEnabled = true;
         public bool slidingEnabled = false;
-
-        [Header ("Step offset (can be buggy, enable at your own risk)")]
+		[Header("Features [Experimental]")]
+		public bool moveWithGround = false; //Parents player to the ground object, allowing them to move with surfaces as they would in Source
+       
+		[Header ("Step offset (can be buggy, enable at your own risk)")]
         public bool useStepOffset = false;
         public float stepOffset = 0.35f;
 
@@ -95,8 +97,7 @@ namespace Fragsurf.Movement {
 			Gizmos.color = Color.red;
 			Gizmos.DrawWireCube( transform.position, colliderSize );
 		}
-		
-        private void Awake () {
+		        private void Awake () {
             
             _controller.playerTransform = playerRotationTransform;
             
@@ -212,7 +213,26 @@ namespace Fragsurf.Movement {
 
         }
 
-        private void Update () {
+		private void Update () {
+
+			if ( moveWithGround )
+			{
+				if ( groundObject )
+				{
+					transform.parent = groundObject.transform;
+				}
+				else
+				{
+					transform.parent = null;
+				}
+
+				//HACKHACK: we don't want the player to rotate on these. Is there a better way to do this?
+				Quaternion temp = transform.rotation;
+				temp.x = 0;
+				temp.z = 0;
+
+				transform.rotation = temp;
+			}
 
             _colliderObject.transform.rotation = Quaternion.identity;
 
@@ -258,6 +278,7 @@ namespace Fragsurf.Movement {
             _colliderObject.transform.rotation = Quaternion.identity;
 
         }
+
         
         private void UpdateTestBinds () {
 
