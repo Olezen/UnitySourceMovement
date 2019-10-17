@@ -56,22 +56,12 @@ public class PlayerAiming : MonoBehaviour
 		//Apply real rotation to body
 		bodyTransform.eulerAngles = Vector3.Scale(real_rotation, new Vector3(0f, 1f, 0f));
 
-		var aim_transform = transform;
+		//Apply rotation and recoil
+		Vector3 camera_euler_punch_applied = real_rotation;
+		camera_euler_punch_applied.x += punchAngle.x;
+		camera_euler_punch_applied.y += punchAngle.y;
 
-		//Apply real rotation to aim
-		aim_transform.eulerAngles = real_rotation;
-
-		//Apply recoil
-		{
-			//If you want the recoil to be purely visual, move it into LateUpdate
-			var camera_rotation = aim_transform;
-
-			Vector3 camera_euler_punch_applied = camera_rotation.eulerAngles;
-			camera_euler_punch_applied.x += punchAngle.x;
-			camera_euler_punch_applied.y += punchAngle.y;
-
-			camera_rotation.eulerAngles = camera_euler_punch_applied;
-		}
+		transform.eulerAngles = camera_euler_punch_applied;
 	}
 
 	public void ViewPunch(Vector2 punch_amount)
