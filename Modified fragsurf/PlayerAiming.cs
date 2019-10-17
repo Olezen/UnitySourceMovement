@@ -15,7 +15,7 @@ public class PlayerAiming : MonoBehaviour
 	public float maxYRotation = 90f;
 
 	//The real rotation of the camera without recoil
-	private Vector3 real_rotation;
+	private Vector3 realRotation;
 
 	[Header("Aimpunch")]
 	[Tooltip("bigger number makes the response more damped, smaller is less damped, currently the system will overshoot, with larger damping values it won't")]
@@ -46,31 +46,31 @@ public class PlayerAiming : MonoBehaviour
 		DecayPunchAngle();
 
 		// Input
-		float x_movement = Input.GetAxisRaw("Mouse X") * horizontalSensitivity * sensitivityMultiplier;
-		float y_movement = -Input.GetAxisRaw("Mouse Y") * verticalSensitivity  * sensitivityMultiplier;
+		float xMovement = Input.GetAxisRaw("Mouse X") * horizontalSensitivity * sensitivityMultiplier;
+		float yMovement = -Input.GetAxisRaw("Mouse Y") * verticalSensitivity  * sensitivityMultiplier;
 
 		// Calculate real rotation from input
-		real_rotation   = new Vector3(Mathf.Clamp(real_rotation.x + y_movement, minYRotation, maxYRotation), real_rotation.y + x_movement, real_rotation.z);
-		real_rotation.z = Mathf.Lerp(real_rotation.z, 0f, Time.deltaTime * 3f);
+		realRotation   = new Vector3(Mathf.Clamp(realRotation.x + yMovement, minYRotation, maxYRotation), realRotation.y + xMovement, realRotation.z);
+		realRotation.z = Mathf.Lerp(realRotation.z, 0f, Time.deltaTime * 3f);
 
 		//Apply real rotation to body
-		bodyTransform.eulerAngles = Vector3.Scale(real_rotation, new Vector3(0f, 1f, 0f));
+		bodyTransform.eulerAngles = Vector3.Scale(realRotation, new Vector3(0f, 1f, 0f));
 
 		//Apply rotation and recoil
-		Vector3 camera_euler_punch_applied = real_rotation;
-		camera_euler_punch_applied.x += punchAngle.x;
-		camera_euler_punch_applied.y += punchAngle.y;
+		Vector3 cameraEulerPunchApplied = realRotation;
+		cameraEulerPunchApplied.x += punchAngle.x;
+		cameraEulerPunchApplied.y += punchAngle.y;
 
-		transform.eulerAngles = camera_euler_punch_applied;
+		transform.eulerAngles = cameraEulerPunchApplied;
 	}
 
-	public void ViewPunch(Vector2 punch_amount)
+	public void ViewPunch(Vector2 punchAmount)
 	{
 		//Remove previous recoil
 		punchAngle = Vector2.zero;
 
 		//Recoil go up
-		punchAngleVel -= punch_amount * 20;
+		punchAngleVel -= punchAmount * 20;
 	}
 
 	private void DecayPunchAngle()
@@ -85,8 +85,8 @@ public class PlayerAiming : MonoBehaviour
 
 			punchAngleVel *= damping;
 
-			float spring_force_magnitude = punchSpringConstant * Time.deltaTime;
-			punchAngleVel -= punchAngle * spring_force_magnitude;
+			float springForceMagnitude = punchSpringConstant * Time.deltaTime;
+			punchAngleVel -= punchAngle * springForceMagnitude;
 		}
 		else
 		{
