@@ -1,77 +1,97 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
-public class PlayerAiming : MonoBehaviour {
+public class PlayerAiming : MonoBehaviour
+{
+	[Header("References")]
+	public Transform bodyTransform;
 
-    [Header ("References")]
-    public Transform bodyTransform = null;
+	[Header("Sensitivity")]
+	public float sensitivityMultiplier = 1f;
+	public float horizontalSensitivity = 1f;
+	public float verticalSensitivity   = 1f;
 
-    [Header ("Sensitivity")]
-    public float sensitivityMultiplier = 1f;
-    public float horizontalSensitivity = 1f;
-    public float verticalSensitivity = 1f;
+	[Header("Restrictions")]
+	public float minYRotation = -90f;
+	public float maxYRotation = 90f;
 
-    [Header ("Restrictions")]
-    public float minYRotation = -90f;
-    public float maxYRotation = 90f;
-    
-    // Rotation values
-    [HideInInspector] public float bodyRotation = 0f;
-    [HideInInspector] public Vector3 cameraRotation = Vector3.zero;
+	//The real rotation of the camera without recoil
+	private Vector3 real_rotation;
 
-    private float bodyRotationTemp = 0f;
-    private Vector3 cameraRotationTemp = Vector3.zero;
+	[Header("Aimpunch")]
+	[Tooltip("bigger number makes the response more damped, smaller is less damped, currently the system will overshoot, with larger damping values it won't")]
+	public float punchDamping = 9.0f;
 
-    // Leaning
-    [HideInInspector] public float leanInput = 0f;
+	[Tooltip("bigger number increases the speed at which the view corrects")]
+	public float punchSpringConstant = 65.0f;
 
-    // Sway
-    [HideInInspector] public float sway = 0f;
+	[HideInInspector]
+	public Vector2 punchAngle;
 
-    void Start () {
-        
-        // Lock the mouse
-        Cursor.lockState = CursorLockMode.Locked;
-        Cursor.visible = false;
+	[HideInInspector]
+	public Vector2 punchAngleVel;
 
-    }
+	private void Start()
+	{
+		// Lock the mouse
+		Cursor.lockState = CursorLockMode.Locked;
+		Cursor.visible   = false;
+	}
 
-    void Update () {
-        
-        Vector3 eulerAngles = transform.localEulerAngles;
+	private void Update()
+	{
+		// Fix pausing
+		if (Mathf.Abs(Time.timeScale) <= 0)
+			return;
 
-        // Remove previous rotation
-        eulerAngles = new Vector3 (eulerAngles.x - cameraRotationTemp.x, eulerAngles.y, eulerAngles.z - cameraRotationTemp.z);
-        bodyTransform.eulerAngles -= cameraRotationTemp.y * Vector3.up;
-        
-        // Fix pausing
-        if (Time.timeScale == 0f)
-            return;
+		DecayPunchAngle();
 
-        // Input
-        float xMovement = Input.GetAxis ("Mouse X") * horizontalSensitivity * sensitivityMultiplier;
-        float yMovement = -Input.GetAxis ("Mouse Y") * verticalSensitivity * sensitivityMultiplier;
-        
-        // Rotate camera
-        cameraRotation = new Vector3 (Mathf.Clamp (cameraRotation.x + yMovement, minYRotation, maxYRotation),
-                                      cameraRotation.y + xMovement,
-                                      cameraRotation.z + sway);
+		// Input
+		float x_movement = Input.GetAxisRaw("Mouse X") * horizontalSensitivity * sensitivityMultiplier;
+		float y_movement = -Input.GetAxisRaw("Mouse Y") * verticalSensitivity  * sensitivityMultiplier;
 
-        cameraRotation.z = Mathf.Lerp (cameraRotation.z, 0f, Time.deltaTime * 3f);
+		// Calculate real rotation from input
+		real_rotation   = new Vector3(Mathf.Clamp(real_rotation.x + y_movement, minYRotation, maxYRotation), real_rotation.y + x_movement, real_rotation.z);
+		real_rotation.z = Mathf.Lerp(real_rotation.z, 0f, Time.deltaTime * 3f);
 
-        // Apply rotation
-        Vector3 clampedRotation = new Vector3 (Mathf.Clamp (cameraRotation.x, minYRotation, maxYRotation),
-                                               cameraRotation.y,
-                                               cameraRotation.z);
+		//Apply real rotation to body
+		bodyTransform.eulerAngles = Vector3.Scale(real_rotation, new Vector3(0f, 1f, 0f));
 
-        eulerAngles = new Vector3 (eulerAngles.x + clampedRotation.x, eulerAngles.y, eulerAngles.z + clampedRotation.z);
-        bodyTransform.eulerAngles += Vector3.Scale (clampedRotation, new Vector3 (0f, 1f, 0f));
-        cameraRotationTemp = clampedRotation;
-        
-        // Remove recoil
-        transform.localEulerAngles = eulerAngles;
+		//Apply rotation and recoil
+		Vector3 camera_euler_punch_applied = real_rotation;
+		camera_euler_punch_applied.x += punchAngle.x;
+		camera_euler_punch_applied.y += punchAngle.y;
 
-    }
+		transform.eulerAngles = camera_euler_punch_applied;
+	}
 
+	public void ViewPunch(Vector2 punch_amount)
+	{
+		//Remove previous recoil
+		punchAngle = Vector2.zero;
+
+		//Recoil go up
+		punchAngleVel -= punch_amount * 20;
+	}
+
+	private void DecayPunchAngle()
+	{
+		if (punchAngle.sqrMagnitude > 0.001 || punchAngleVel.sqrMagnitude > 0.001)
+		{
+			punchAngle += punchAngleVel * Time.deltaTime;
+			float damping = 1 - (punchDamping * Time.deltaTime);
+
+			if (damping < 0)
+				damping = 0;
+
+			punchAngleVel *= damping;
+
+			float spring_force_magnitude = punchSpringConstant * Time.deltaTime;
+			punchAngleVel -= punchAngle * spring_force_magnitude;
+		}
+		else
+		{
+			punchAngle    = Vector2.zero;
+			punchAngleVel = Vector2.zero;
+		}
+	}
 }
