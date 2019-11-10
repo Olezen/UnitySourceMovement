@@ -43,7 +43,8 @@ namespace Fragsurf.Movement {
 
         public bool slidingEnabled = false;
         public bool laddersEnabled = false;
-
+        
+        public bool climbingLadder = false;
         public Vector3 ladderNormal = Vector3.zero;
         public Vector3 ladderDirection = Vector3.forward;
         public Vector3 ladderVelocity = Vector3.zero;
