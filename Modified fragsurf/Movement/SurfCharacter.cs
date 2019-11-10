@@ -38,6 +38,7 @@ namespace Fragsurf.Movement {
         [Header ("Features")]
         public bool crouchingEnabled = true;
         public bool slidingEnabled = false;
+        public bool laddersEnabled = true;
 
         [Header ("Step offset (can be buggy, enable at your own risk)")]
         public bool useStepOffset = false;
@@ -194,6 +195,7 @@ namespace Fragsurf.Movement {
             _moveData.rigidbodyPushForce = rigidbodyPushForce;
 
             _moveData.slidingEnabled = slidingEnabled;
+            _moveData.laddersEnabled = laddersEnabled;
 
             _moveData.playerTransform = transform;
             _moveData.viewTransform = viewTransform;
