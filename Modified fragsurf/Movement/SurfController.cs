@@ -44,7 +44,18 @@ namespace Fragsurf.Movement {
             _config = config;
             _deltaTime = deltaTime;
             
-            if (!_surfer.moveData.underwater) {
+            if (_surfer.moveData.laddersEnabled && !_surfer.moveData.climbingLadder) {
+
+                // Look for ladders
+                LadderCheck (new Vector3(1f, 0.5f, 1f), _surfer.moveData.velocity * Time.deltaTime * 2f);
+
+            }
+            
+            if (_surfer.moveData.laddersEnabled && _surfer.moveData.climbingLadder) {
+                
+                LadderPhysics ();
+                
+            } else if (!_surfer.moveData.underwater) {
 
                 if (_surfer.moveData.velocity.y <= 0f)
                     jumping = false;
@@ -283,7 +294,71 @@ namespace Fragsurf.Movement {
                 _surfer.moveData.velocity.y = Mathf.Max (_surfer.moveData.velocity.y, _config.jumpForce);
 
         }
+        
+        private void LadderCheck (Vector3 colliderScale, Vector3 direction) {
 
+            if (_surfer.moveData.velocity.sqrMagnitude <= 0f)
+                return;
+
+            Debug.Log ("Checking for ladders");
+
+            bool foundLadder = false;
+
+            RaycastHit [] hits = Physics.BoxCastAll (_surfer.moveData.origin, Vector3.Scale (_surfer.collider.bounds.size * 0.5f, colliderScale), Vector3.Scale (direction, new Vector3 (1f, 0f, 1f)), Quaternion.identity, direction.magnitude, SurfPhysics.groundLayerMask, QueryTriggerInteraction.Collide);
+            foreach (RaycastHit hit in hits) {
+
+                Ladder ladder = hit.transform.GetComponentInParent<Ladder> ();
+                if (ladder != null) {
+
+                    foundLadder = true;
+                    if (_surfer.moveData.climbingLadder == false) {
+
+                        _surfer.moveData.climbingLadder = true;
+                        _surfer.moveData.ladderNormal = hit.normal;
+                        _surfer.moveData.ladderDirection = direction;
+
+                    }
+
+                }
+
+            }
+
+            if (!foundLadder) {
+                
+                _surfer.moveData.ladderNormal = Vector3.zero;
+                _surfer.moveData.ladderVelocity = Vector3.zero;
+                _surfer.moveData.climbingLadder = false;
+
+            }
+
+        }
+
+        private void LadderPhysics () {
+
+            _surfer.moveData.ladderVelocity = Vector3.up * _surfer.moveData.verticalAxis * 6f;
+            _surfer.moveData.velocity = Vector3.Lerp (_surfer.moveData.velocity, _surfer.moveData.ladderVelocity, Time.deltaTime * 10f);
+
+            LadderCheck (Vector3.one, _surfer.moveData.ladderDirection);
+            
+            Trace floorTrace = TraceToFloor ();
+            if (_surfer.moveData.verticalAxis < 0f && floorTrace.hitCollider != null) {
+
+                _surfer.moveData.velocity = _surfer.moveData.ladderNormal * 0.5f;
+                _surfer.moveData.ladderVelocity = Vector3.zero;
+                _surfer.moveData.climbingLadder = false;
+
+            }
+
+            if (_surfer.moveData.wishJump) {
+
+                _surfer.moveData.velocity = _surfer.moveData.ladderNormal * 4f;
+                _surfer.moveData.ladderVelocity = Vector3.zero;
+                _surfer.moveData.climbingLadder = false;
+                
+            }
+            
+        }
+        
         private void Accelerate (Vector3 wishDir, float wishSpeed, float acceleration, bool yMovement) {
 
             // Initialise variables
