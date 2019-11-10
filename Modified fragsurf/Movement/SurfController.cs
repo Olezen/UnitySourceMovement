@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using Fragsurf.TraceUtil;
 
 namespace Fragsurf.Movement {
@@ -47,7 +47,7 @@ namespace Fragsurf.Movement {
             if (_surfer.moveData.laddersEnabled && !_surfer.moveData.climbingLadder) {
 
                 // Look for ladders
-                LadderCheck (new Vector3(1f, 0.95f, 1f), _surfer.moveData.velocity * Time.deltaTime * 2f);
+                LadderCheck (new Vector3(1f, 0.95f, 1f), _surfer.moveData.velocity * Mathf.Clamp (Time.deltaTime * 2f, 0.025f, 0.25f));
 
             }
             
@@ -330,7 +330,7 @@ namespace Fragsurf.Movement {
 
                             _surfer.moveData.climbingLadder = true;
                             _surfer.moveData.ladderNormal = hit.normal;
-                            _surfer.moveData.ladderDirection = direction;
+                            _surfer.moveData.ladderDirection = -hit.normal * direction.magnitude * 2f;
 
                             if (_surfer.moveData.angledLaddersEnabled) {
 
@@ -345,6 +345,7 @@ namespace Fragsurf.Movement {
                                 _surfer.moveData.ladderClimbDir = Vector3.up;
                             
                         }
+                        
                     }
 
                 }
@@ -363,14 +364,15 @@ namespace Fragsurf.Movement {
         }
 
         private void LadderPhysics () {
-
+            
             _surfer.moveData.ladderVelocity = _surfer.moveData.ladderClimbDir * _surfer.moveData.verticalAxis * 6f;
+
             _surfer.moveData.velocity = Vector3.Lerp (_surfer.moveData.velocity, _surfer.moveData.ladderVelocity, Time.deltaTime * 10f);
 
             LadderCheck (Vector3.one, _surfer.moveData.ladderDirection);
             
             Trace floorTrace = TraceToFloor ();
-            if (_surfer.moveData.verticalAxis < 0f && floorTrace.hitCollider != null) {
+            if (_surfer.moveData.verticalAxis < 0f && floorTrace.hitCollider != null && Vector3.Angle (Vector3.up, floorTrace.planeNormal) <= _surfer.moveData.slopeLimit) {
 
                 _surfer.moveData.velocity = _surfer.moveData.ladderNormal * 0.5f;
                 _surfer.moveData.ladderVelocity = Vector3.zero;
