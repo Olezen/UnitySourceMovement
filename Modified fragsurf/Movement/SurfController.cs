@@ -387,16 +387,6 @@ namespace Fragsurf.Movement {
             }
             
         }
-
-            if (_surfer.moveData.wishJump) {
-
-                _surfer.moveData.velocity = _surfer.moveData.ladderNormal * 4f;
-                _surfer.moveData.ladderVelocity = Vector3.zero;
-                _surfer.moveData.climbingLadder = false;
-                
-            }
-            
-        }
         
         private void Accelerate (Vector3 wishDir, float wishSpeed, float acceleration, bool yMovement) {
 
