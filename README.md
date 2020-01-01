@@ -8,7 +8,7 @@ Video demo: https://www.youtube.com/watch?v=w5BquYbCBAE
 WebGL demo: http://www.typicalgames.com/FragsurfDemo/index.html
 
 
-A full adaptation of Source engine's movement mechanics in Unity, including strafe jumping, surfing, bunnyhopping, swimming, crouching and jump-crouching (optional), as well as sliding (optional). The player can also push around (and be pushed around by) rigidbodies.
+An adaptation of the Source engine's movement mechanics in Unity, including strafe jumping, surfing, bunnyhopping, swimming, crouching and jump-crouching (optional), as well as sliding (optional). The player can also push rigidbodies around.
 
 If you want the player to collide with objects that are not on the default layer, you can set the layer mask in the SurfPhysics class.
 
