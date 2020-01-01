@@ -85,22 +85,30 @@ namespace Fragsurf.Movement {
             speed =  _surfer.moveData.velocity.magnitude;
             _surfer.moveData.velocity.y = yVel;
             
-            float maxDistPerFrame = 0.05f;
-            Vector3 velocityThisFrame = _surfer.moveData.velocity * _deltaTime;
-            float velocityDist = velocityThisFrame.magnitude;
-            float velocityDistLeft = velocityDist;
-            float initialVel = velocityDistLeft;
-            while (velocityDistLeft > 0f) {
+            if (_surfer.moveData.velocity.sqrMagnitude == 0f) {
 
-                float amountThisLoop = Mathf.Min (maxDistPerFrame, velocityDistLeft);
-                velocityDistLeft -= amountThisLoop;
+                // Do collisions while standing still
+                SurfPhysics.ResolveCollisions (_surfer.collider, ref _surfer.moveData.origin, ref _surfer.moveData.velocity, _surfer.moveData.rigidbodyPushForce, 1f, _surfer.moveData.stepOffset, _surfer);
 
-                // increment origin
-                Vector3 velThisLoop = velocityThisFrame * (amountThisLoop / initialVel);
-                _surfer.moveData.origin += velThisLoop;
+            } else {
 
-                // don't penetrate walls
-                SurfPhysics.ResolveCollisions (_surfer.collider, ref _surfer.moveData.origin, ref _surfer.moveData.velocity, _surfer.moveData.rigidbodyPushForce, amountThisLoop / velocityDist, _surfer.moveData.useStepOffset ? _surfer.moveData.stepOffset : 0f, _surfer);
+                float maxDistPerFrame = 0.2f;
+                Vector3 velocityThisFrame = _surfer.moveData.velocity * _deltaTime;
+                float velocityDistLeft = velocityThisFrame.magnitude;
+                float initialVel = velocityDistLeft;
+                while (velocityDistLeft > 0f) {
+
+                    float amountThisLoop = Mathf.Min (maxDistPerFrame, velocityDistLeft);
+                    velocityDistLeft -= amountThisLoop;
+
+                    // increment origin
+                    Vector3 velThisLoop = velocityThisFrame * (amountThisLoop / initialVel);
+                    _surfer.moveData.origin += velThisLoop;
+
+                    // don't penetrate walls
+                    SurfPhysics.ResolveCollisions (_surfer.collider, ref _surfer.moveData.origin, ref _surfer.moveData.velocity, _surfer.moveData.rigidbodyPushForce, amountThisLoop / initialVel, _surfer.moveData.stepOffset, _surfer);
+
+                }
 
             }
 
