@@ -66,7 +66,15 @@ namespace Fragsurf.TraceUtil {
                 result.hitPoint = hit.point;
                 result.planeNormal = hit.normal;
                 result.distance = hit.distance;
+                
+                RaycastHit normalHit;
+                Ray normalRay = new Ray (hit.point - direction * 0.001f, direction);
+                if (hit.collider.Raycast (normalRay, out normalHit, 0.002f)) {
+                    
+                    result.planeNormal = normalHit.normal;
 
+                }
+                
             } else
                 result.fraction = 1;
 
@@ -105,7 +113,15 @@ namespace Fragsurf.TraceUtil {
                 result.hitPoint = hit.point;
                 result.planeNormal = hit.normal;
                 result.distance = hit.distance;
+                
+                RaycastHit normalHit;
+                Ray normalRay = new Ray (hit.point - direction * 0.001f, direction);
+                if (hit.collider.Raycast (normalRay, out normalHit, 0.002f)) {
+                    
+                    result.planeNormal = normalHit.normal;
 
+                }
+                
             } else
                 result.fraction = 1;
 
