@@ -312,6 +312,9 @@ namespace Fragsurf.Movement {
             else if (moveBack)
                 _moveData.forwardMove = -moveConfig.acceleration;
 
+			if(_wishJumpScroll >= 0f)
+                _wishJumpScroll -= Time.deltaTime*0.5f;
+
 			float mouseWheelAxis = Mathf.Abs(Input.GetAxisRaw("Mouse ScrollWheel"));
             _wishJumpScroll = Mathf.Clamp(Mathf.Lerp(0, _wishJumpScroll+mouseWheelAxis*20f, 0.5f), 0f, 2f);
 
