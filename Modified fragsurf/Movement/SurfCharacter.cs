@@ -68,6 +68,8 @@ namespace Fragsurf.Movement {
 
         private bool underwater = false;
 
+		private float _wishJumpScroll;
+
         ///// Properties /////
 
         public MoveType moveType { get { return MoveType.Walk; } }
@@ -309,11 +311,17 @@ namespace Fragsurf.Movement {
                 _moveData.forwardMove = moveConfig.acceleration;
             else if (moveBack)
                 _moveData.forwardMove = -moveConfig.acceleration;
-            
-            if (Input.GetButtonDown ("Jump"))
+
+			if(_wishJumpScroll >= 0f)
+                _wishJumpScroll -= Time.deltaTime*0.5f;
+
+			float mouseWheelAxis = Mathf.Abs(Input.GetAxisRaw("Mouse ScrollWheel"));
+            _wishJumpScroll = Mathf.Clamp(Mathf.Lerp(0, _wishJumpScroll+mouseWheelAxis*20f, 0.5f), 0f, 2f);
+
+            if (Input.GetButtonDown ("Jump") || _wishJumpScroll >= 0.04f || mouseWheelAxis >= 0.05f)
                 _moveData.wishJump = true;
 
-            if (!Input.GetButton ("Jump"))
+            else if (!Input.GetButton ("Jump"))
                 _moveData.wishJump = false;
             
             _moveData.viewAngles = _angles;
