@@ -64,7 +64,7 @@ namespace Fragsurf.Movement {
                     // Step offset
                     if (stepOffset > 0f && surfer != null && surfer.moveData.useStepOffset)
                         if (StepOffset (collider, _colliders [i], ref origin, ref velocity, rigidbodyPushForce, velocityMultiplier, stepOffset, direction, distance, forwardVelocity, surfer))
-                            return;
+                            continue;
 
                     // Handle collision
                     direction.Normalize ();
@@ -78,90 +78,108 @@ namespace Fragsurf.Movement {
                     if (rb != null && !rb.isKinematic)
                         rb.AddForceAtPosition (velocityProjected * velocityMultiplier * rigidbodyPushForce, origin, ForceMode.Impulse);
 
+                    if (stepOffset > 0f && surfer != null && surfer.moveData.useStepOffset)
+                        if (StepOffset (collider, _colliders [i], ref origin, ref velocity, rigidbodyPushForce, velocityMultiplier, stepOffset, direction, distance, forwardVelocity, surfer))
+                            return;
+
                 }
 
             }
 
         }
 
-        public static bool StepOffset (Collider collider, Collider otherCollider, ref Vector3 origin, ref Vector3 velocity, float rigidbodyPushForce, float velocityMultiplier, float stepOffset, Vector3 direction, float distance, Vector3 forwardVelocity, ISurfControllable surfer) {
+          public static bool StepOffset(Collider collider, Collider otherCollider, ref Vector3 origin, ref Vector3 velocity, float rigidbodyPushForce, float velocityMultiplier, float stepOffset, Vector3 direction, float distance, Vector3 forwardVelocity, ISurfControllable surfer)
+          {
 
-            // Return if step offset is 0
-            if (stepOffset <= 0f)
-                return false;
+               // Return if step offset is 0
+               if (stepOffset <= 0f)
+                    return false;
 
-            // Get forward direction (return if we aren't moving/are only moving vertically)
-            Vector3 forwardDirection = forwardVelocity.normalized;
-            if (forwardDirection.sqrMagnitude == 0f)
-                return false;
+               // Get forward direction (return if we aren't moving/are only moving vertically)
+               Vector3 forwardDirection = forwardVelocity.normalized;
+               if (forwardDirection.sqrMagnitude == 0f)
+                    return false;
 
-            // Trace ground
-            Trace groundTrace = Tracer.TraceCollider (collider, origin, origin + Vector3.down * 0.1f, groundLayerMask);
-            if (groundTrace.hitCollider == null || Vector3.Angle (Vector3.up, groundTrace.planeNormal) > surfer.moveData.slopeLimit)
-                return false;
+               // Trace ground
+               //Trace groundTrace = Tracer.TraceCollider (collider, origin, origin + Vector3.down * 0.1f, groundLayerMask);
+               //if (groundTrace.hitCollider == null || Vector3.Angle (Vector3.up, groundTrace.planeNormal) > surfer.moveData.slopeLimit)
+               //return false;
 
-            // Trace wall
-            Trace wallTrace = Tracer.TraceCollider (collider, origin, origin + velocity, groundLayerMask, 0.9f);
-            if (wallTrace.hitCollider == null || Vector3.Angle (Vector3.up, wallTrace.planeNormal) <= surfer.moveData.slopeLimit)
-                return false;
+               // Trace wall
+               //Trace wallTrace = Tracer.TraceCollider (collider, origin, origin + velocity * Time.deltaTime, groundLayerMask, 0.9f);
 
-            // Trace upwards (check for roof etc)
-            float upDistance = stepOffset;
-            Trace upTrace = Tracer.TraceCollider (collider, origin, origin + Vector3.up * stepOffset, groundLayerMask);
-            if (upTrace.hitCollider != null)
-                upDistance = upTrace.distance;
+               //if (wallTrace.hitCollider == null || Vector3.Angle (Vector3.up, wallTrace.planeNormal) <= surfer.moveData.slopeLimit)
+               //return false;
 
-            // Don't bother doing the rest if we can't move up at all anyway
-            if (upDistance <= 0f)
-                return false;
+               // Trace upwards (check for roof etc)
+               float upDistance = stepOffset;
+               Trace upTrace = Tracer.TraceCollider(collider, origin, origin + Vector3.up * stepOffset, groundLayerMask);
+               if (upTrace.hitCollider != null)
+                    upDistance = upTrace.distance;
 
-            Vector3 upOrigin = origin + Vector3.up * upDistance;
+               //Debug.Log("Partial step");
 
-            // Trace forwards (check for walls etc)
-            float forwardMagnitude = stepOffset;
-            float forwardDistance = forwardMagnitude;
-            Trace forwardTrace = Tracer.TraceCollider (collider, upOrigin, upOrigin + forwardDirection * Mathf.Max (0.2f, forwardMagnitude), groundLayerMask);
-            if (forwardTrace.hitCollider != null)
-                forwardDistance = forwardTrace.distance;
-            
-            // Don't bother doing the rest if we can't move forward anyway
-            if (forwardDistance <= 0f)
-                return false;
+               // Don't bother doing the rest if we can't move up at all anyway
+               if (upDistance <= 0f)
+                    return false;
 
-            Vector3 upForwardOrigin = upOrigin + forwardDirection * forwardDistance;
+               Vector3 upOrigin = origin + Vector3.up * upDistance;
 
-            // Trace down (find ground)
-            float downDistance = upDistance;
-            Trace downTrace = Tracer.TraceCollider (collider, upForwardOrigin, upForwardOrigin + Vector3.down * upDistance, groundLayerMask);
-            if (downTrace.hitCollider != null)
-                downDistance = downTrace.distance;
+               // Trace forwards (check for walls etc)
+               float forwardMagnitude = stepOffset;
 
-            // Check step size/angle
-            float verticalStep = Mathf.Clamp (upDistance - downDistance, 0f, stepOffset);
-            float horizontalStep = forwardDistance;
-            float stepAngle = Vector3.Angle (Vector3.forward, new Vector3 (0f, verticalStep, horizontalStep));
-            if (stepAngle > surfer.moveData.slopeLimit)
-                return false;
 
-            // Get new position
-            Vector3 endOrigin = origin + Vector3.up * verticalStep;
-            
-            // Actually move
-            if (origin != endOrigin && forwardDistance > 0f) {
+               float forwardDistance = forwardMagnitude * Time.deltaTime;
+               Trace forwardTrace = Tracer.TraceCollider(collider, upOrigin, upOrigin + forwardDirection * forwardMagnitude, groundLayerMask);
+               if (forwardTrace.hitCollider != null)
+                    //forwardDistance = forwardTrace.distance; //- 0.005f;
 
-                Debug.Log ("Moved up step!");
-                origin = endOrigin + forwardDirection * forwardDistance * Time.deltaTime;
-                return true;
+                    // Don't bother doing the rest if we can't move forward anyway
+                    if (forwardDistance <= 0f)
+                         return false;
 
-            } else
-                return false;
+               Vector3 upForwardOrigin = upOrigin + forwardDirection * forwardDistance;
 
-        }
+               // Trace down (find ground)
+               float downDistance = upDistance;
+               Trace downTrace = Tracer.TraceCollider(collider, upForwardOrigin, upForwardOrigin + Vector3.down * upDistance, groundLayerMask);
+               if (downTrace.hitCollider != null && Vector3.Angle(Vector3.up, downTrace.planeNormal) <= surfer.moveData.slopeLimit)
+                    downDistance = downTrace.distance - 0.1f;
 
-        /// <summary>
-        /// 
-        /// </summary>
-        public static void Friction (ref Vector3 velocity, float stopSpeed, float friction, float deltaTime) {
+               // Check step size/angle
+               float verticalStep = Mathf.Clamp(upDistance - downDistance, 0f, stepOffset);
+               float horizontalStep = forwardDistance;
+               float stepAngle = Vector3.Angle(Vector3.forward, new Vector3(0f, verticalStep, horizontalStep));
+
+               Debug.Log("Angle: " + stepAngle + "; " + Time.fixedTime);
+               //if (stepAngle > surfer.moveData.slopeLimit)
+               //return false;
+
+               // Get new position
+               Vector3 endOrigin = origin + Vector3.up * verticalStep;
+
+               // Actually move
+               if (origin != endOrigin && forwardDistance > 0f)
+               {
+
+
+                    //velocity -= forwardDirection * forwardDistance;
+                    origin = endOrigin; //+ forwardDirection * forwardDistance;
+                    return true;
+
+               }
+               else
+               {
+                    Debug.Log("End origin same as origin; " + Time.fixedTime);
+                    return false;
+               }
+
+          }
+
+          /// <summary>
+          /// 
+          /// </summary>
+          public static void Friction (ref Vector3 velocity, float stopSpeed, float friction, float deltaTime) {
 
             var speed = velocity.magnitude;
 
@@ -499,7 +517,7 @@ namespace Fragsurf.Movement {
         /// <param name="p2"></param>
         public static void GetCapsulePoints (CapsuleCollider capc, Vector3 origin, out Vector3 p1, out Vector3 p2) {
 
-            var distanceToPoints = capc.height / 2f - capc.radius;
+            var distanceToPoints = capc.height / 2f /*- capc.radius*/; //Remove - capc.radius fix from DrDezmund
             p1 = origin + capc.center + Vector3.up * distanceToPoints;
             p2 = origin + capc.center - Vector3.up * distanceToPoints;
 

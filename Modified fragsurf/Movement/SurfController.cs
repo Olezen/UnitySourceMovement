@@ -664,39 +664,20 @@ namespace Fragsurf.Movement {
 
             } else if (crouching) {
 
-                // Check if the player can uncrouch
-                bool canUncrouch = true;
-                if (_surfer.collider.GetType () == typeof (BoxCollider)) {
+                    // Check if the player can uncrouch
+                    bool canUncrouch = true;
 
-                    // Box collider
-                    BoxCollider boxCollider = (BoxCollider)_surfer.collider;
-                    Vector3 halfExtents = boxCollider.size * 0.5f;
-                    Vector3 startPos = boxCollider.transform.position;
-                    Vector3 endPos = boxCollider.transform.position + (uncrouchDown ? Vector3.down : Vector3.up) * heightDifference;
+                    //Simplified crouching code by DiVoidation
+                    Vector3 startPos = _surfer.moveData.origin;
+                    Vector3 endPos = _surfer.moveData.origin + (uncrouchDown ? Vector3.down : Vector3.up) * heightDifference;
 
-                    Trace trace = Tracer.TraceBox (startPos, endPos, halfExtents, boxCollider.contactOffset, SurfPhysics.groundLayerMask);
+                    Trace trace = Tracer.TraceCollider(_surfer.collider, startPos, endPos, SurfPhysics.groundLayerMask);
 
                     if (trace.hitCollider != null)
-                        canUncrouch = false;
+                         canUncrouch = false;
 
-                } else if (_surfer.collider.GetType () == typeof (CapsuleCollider)) {
-
-                    // Capsule collider
-                    CapsuleCollider capsuleCollider = (CapsuleCollider)_surfer.collider;
-                    Vector3 point1 = capsuleCollider.center + Vector3.up * capsuleCollider.height * 0.5f;
-                    Vector3 point2 = capsuleCollider.center + Vector3.down * capsuleCollider.height * 0.5f;
-                    Vector3 startPos = capsuleCollider.transform.position;
-                    Vector3 endPos = capsuleCollider.transform.position + (uncrouchDown ? Vector3.down : Vector3.up) * heightDifference;
-
-                    Trace trace = Tracer.TraceCapsule (point1, point2, capsuleCollider.radius, startPos, endPos, capsuleCollider.contactOffset, SurfPhysics.groundLayerMask);
-
-                    if (trace.hitCollider != null)
-                        canUncrouch = false;
-
-                }
-
-                // Uncrouch
-                if (canUncrouch && crouchLerp <= 0.9f) {
+                    // Uncrouch
+                    if (canUncrouch && crouchLerp <= 0.9f) {
 
                     crouching = false;
                     if (_surfer.collider.GetType () == typeof (BoxCollider)) {
